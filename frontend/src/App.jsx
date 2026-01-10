@@ -4,10 +4,12 @@ import { supabase } from './auth/supabaseClient';
 import { Route, Routes, Navigate } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import MainPage from './pages/MainPage/MainPage';
 
 function App() {
 	const [loading, setLoading] = useState(true);
 	const [user, setUser] = useState(null);
+	const [token, setToken] = useState(null);
 
 	useEffect(() => {
 		supabase.auth.getUser().then(({ data }) => {
@@ -18,6 +20,7 @@ function App() {
 		// 2) Listen to login/logout changes
 		const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
 			setUser(session?.user ?? null);
+			setToken(session?.access_token ?? null);
 		});
 
 		return () => sub.subscription.unsubscribe();
@@ -29,15 +32,20 @@ function App() {
 		<Routes>
 			<Route
 				path="/login"
-        		element={user ? <Navigate to="/dashboard" replace /> : <LoginPage />}			
+        		element={user ? <Navigate to="/" replace /> : <LoginPage />}			
 			/>
 			
 		    <Route
 				path="/register"
-				element={user ? <Navigate to="/dashboard" replace /> : <RegisterPage />}
+				element={user ? <Navigate to="/" replace /> : <RegisterPage />}
 			/>
 
-			<Route path="*" element={<Navigate to={user ? "/dashboard" : "/login"} replace />} />
+			<Route
+				path="/"
+				element={user ? <MainPage user={user} token={token} /> : <Navigate to="/login" replace />}
+			/>
+
+			<Route path="*" element={<Navigate to={user ? "/" : "/login"} replace />} />
 		</Routes>
 	)
 }
