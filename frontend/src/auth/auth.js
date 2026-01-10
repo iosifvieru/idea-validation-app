@@ -11,3 +11,7 @@ export function login(email, password) {
 export function logout() {
   return supabase.auth.signOut();
 }
+
+export function getSession() {
+  return supabase.auth.getSession();
+}

@@ -28,7 +28,6 @@ export default function RegisterForm() {
 
     return (
         <>
-        <h2>Register</h2>
         <form onSubmit={onSubmit}>
             <input
                 placeholder="Enter email.."
@@ -48,7 +47,7 @@ export default function RegisterForm() {
 
             <button
                 disabled={busy}
-            >Register.</button>
+            >Register</button>
         </form>
         {status && <p>{status}</p>}
         </>
