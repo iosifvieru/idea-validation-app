@@ -8,8 +8,6 @@ export async function graphqlFetch(query, variables = {}, token = null) {
         headers["Authorization"] = `Bearer ${token}`;
     }
 
-    console.log(token);
-
     const response = await fetch("http://localhost:3000/graphql", {
         method: "POST",
         headers,

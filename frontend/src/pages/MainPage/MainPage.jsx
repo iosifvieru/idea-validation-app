@@ -48,6 +48,32 @@ mutation VoteIdea($id: ID!, $value: Int!) {
 }
 `;
 
+const CREATE_IDEA_MUTATION = `
+mutation CreateIdea($title: String!, $content: String!) {
+  createIdea(title: $title, content: $content) {
+    id
+    title
+    content
+    author
+    upvotes
+    downvotes
+    commentsCount
+    createdAt
+    comments(page: 1, pageSize: 3) {
+      items {
+        id
+        author
+        content
+        upvotes
+        downvotes
+        score
+        createdAt
+      }
+    }
+  }
+}
+`;
+
 export default function MainPage({user, token}) {
   const [ideas, setIdeas] = useState([]);
   const [page, setPage] = useState(1);
@@ -58,6 +84,10 @@ export default function MainPage({user, token}) {
   const [sort, setSort] = useState("NEW");
   const [filterAuthor, setFilterAuthor] = useState("");
   const [filterContent, setFilterContent] = useState("");
+
+  const [newTitle, setNewTitle] = useState("");
+  const [newContent, setNewContent] = useState("");
+  const [posting, setPosting] = useState(false);
 
   const loadIdeas = async () => {
     setLoading(true);
@@ -96,6 +126,30 @@ export default function MainPage({user, token}) {
 
   const handleUpvote = (id) => handleVote(id, 1);
   const handleDownvote = (id) => handleVote(id, -1);
+
+  const handleCreateIdea = async () => {
+    if (!newTitle.trim() || !newContent.trim()) return;
+
+    setPosting(true);
+    setError(null);
+
+    try {
+      const data = await graphqlFetch(
+        CREATE_IDEA_MUTATION,
+        { title: newTitle, content: newContent },
+        token
+      );
+
+      setIdeas((prev) => [data.createIdea, ...prev]);
+
+      setNewTitle("");
+      setNewContent("");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setPosting(false);
+    }
+  };
 
   const filteredAndSortedIdeas = ideas
     .filter((idea) =>
@@ -148,6 +202,37 @@ export default function MainPage({user, token}) {
 
         {loading && <p>Loading ideas...</p>}
         {error && <p className="error">{error}</p>}
+
+        <div className="create-idea-box">
+          <h3 className="create-idea-title">Create New Idea</h3>
+
+          <input
+            type="text"
+            placeholder="Title"
+            value={newTitle}
+            onChange={(e) => setNewTitle(e.target.value)}
+            className="create-idea-input"
+          />
+
+          <textarea
+            placeholder="Describe your idea..."
+            value={newContent}
+            onChange={(e) => setNewContent(e.target.value)}
+            rows={3}
+            className="create-idea-textarea"
+          />
+
+          <div className="create-idea-actions">
+            <button
+              onClick={handleCreateIdea}
+              disabled={posting}
+              className="create-idea-button"
+            >
+              {posting ? "Posting..." : "Post Idea"}
+            </button>
+          </div>
+        </div>
+
         {filteredAndSortedIdeas.map((idea) => (
           <IdeaCard key={idea.id} idea={idea} onViewIdea={handleViewIdea} onUpvote={handleUpvote} onDownvote={handleDownvote} />
         ))}
