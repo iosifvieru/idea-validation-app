@@ -60,6 +60,8 @@ type Query {
 
 type Mutation {
   createIdea(title: String!, content: String!): Idea!
+  updateIdea(id: ID!, title: String, content: String): Idea!
+  deleteIdea(id: ID!): Boolean!
 
   addComment(ideaId: ID!, content: String!): Comment!
 

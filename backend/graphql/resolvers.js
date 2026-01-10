@@ -19,6 +19,10 @@ function checkAuth(user) {
   if (!user) throw new AuthenticationError("Unauthorized");
 }
 
+function isAdmin(user) {
+  if (!user || user.role !== "Administrator") throw new ForbiddenError("Forbidden");
+}
+
 const resolvers = {
   Idea: {
     score: (idea) => calculateScore(idea),
@@ -85,6 +89,42 @@ const resolvers = {
 
       const idea = await Idea.create({ author: user.email, title, content });
       return idea;
+    },
+
+    updateIdea: async (_, { id, title, content }, { user }) => {
+      checkAuth(user);
+
+      const idea = await Idea.findById(id);
+      if (!idea) throw new ApolloError("Idea not found!", "NOT_FOUND");
+
+      if (idea.author !== user.email && !isAdmin(user))
+        throw new ForbiddenError("Forbidden");
+
+      if (title != undefined) idea.title = title;
+      if (content != undefined) {
+        if (content.length < 10)
+          throw new UserInputError(`Content too short`, { invalidArgs: ["content"] } );
+        idea.content = content;
+      }
+
+      await idea.save();
+      return idea;
+    },
+
+    deleteIdea: async (_, { id }, { user }) => {
+      checkAuth(user);
+
+      const idea = await Idea.findById(id);
+      if (!idea) throw new ApolloError("Idea not found!", "NOT_FOUND");
+
+      if (idea.author !== user.email && !isAdmin(user))
+        throw new ForbiddenError("Forbidden");
+
+      await idea.remove();
+      await Comment.deleteMany({ ideaId: id });
+      await Vote.deleteMany({ targetId: id, targetType: "IDEA" });
+
+      return true;
     },
 
     addComment: async (_, { ideaId, content }, { user }) => {
