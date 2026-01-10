@@ -1,3 +1,9 @@
+enum IdeaSort {
+  NEW
+  TOP
+  COMMENTS
+}
+
 enum TargetType {
   IDEA
   COMMENT
@@ -26,7 +32,7 @@ type Idea {
   upvotes: Int!
   downvotes: Int!
   score: Int!
-  comments: CommentPage!
+  comments(page: Int = 1, pageSize: Int = 5): CommentPage!
   commentsCount: Int!
   createdAt: String!
   updatedAt: String!

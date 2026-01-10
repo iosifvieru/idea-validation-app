@@ -23,15 +23,18 @@ const resolvers = {
   Idea: {
     score: (idea) => calculateScore(idea),
 
-    comments: async (idea) => {
+    comments: async (idea, { page = 1, pageSize = 5 }) => {
+      validatePageSize(pageSize);
 
       const total = await Comment.countDocuments({ ideaId: idea.id });
       const items = await Comment.find({ ideaId: idea.id })
         .sort({ createdAt: -1 })
+        .skip((page - 1) * pageSize)
+        .limit(pageSize);
 
       return {
         items,
-        meta: { totalItems: total, hasNextPage: false }
+        meta: { totalItems: total, hasNextPage: page * pageSize < total }
       };
     }
   },
@@ -41,11 +44,20 @@ const resolvers = {
   },
 
   Query: {
-    ideas: async (_, { page = 1, pageSize = 10}) => {
+    ideas: async (_, { page = 1, pageSize = 10, owner, search, sortBy = "NEW" }) => {
       validatePageSize(pageSize);
 
-      const total = await Idea.countDocuments();
-      const items = await Idea.find()
+      const filter = {};
+      if (owner) filter.author = owner;
+      if (search) filter.$text = { $search: search };
+
+      let sort = { createdAt: -1 };
+      if (sortBy === "TOP") sort = { upvotes: -1 };
+      if (sortBy === "COMMENTS") sort = { commentsCount: -1 };
+
+      const total = await Idea.countDocuments(filter);
+      const items = await Idea.find(filter)
+        .sort(sort)
         .skip((page - 1) * pageSize)
         .limit(pageSize);
 
@@ -84,7 +96,7 @@ const resolvers = {
       const idea = await Idea.findById(ideaId);
       if (!idea) throw new ApolloError("Idea not found!", "NOT_FOUND");
 
-      const comment = await Comment.create({ ideaId, author: user.username, content });
+      const comment = await Comment.create({ ideaId, author: user.email, content });
       await Idea.findByIdAndUpdate(ideaId, { $inc: { commentsCount: 1 } });
 
       return comment;
@@ -98,7 +110,7 @@ const resolvers = {
       const idea = await Idea.findById(id);
       if (!idea) throw new ApolloError("Idea not found!", "NOT_FOUND");
 
-      const prevVote = await Vote.findOne({ user: user.username, targetId: id, targetType: "IDEA" });
+      const prevVote = await Vote.findOne({ user: user.email, targetId: id, targetType: "IDEA" });
 
       if (prevVote) {
         if (prevVote.value !== value) {
@@ -109,7 +121,7 @@ const resolvers = {
           await prevVote.save();
         } else return idea;
       } else {
-        await Vote.create({ user: user.username, targetId: id, targetType: "IDEA", value });
+        await Vote.create({ user: user.email, targetId: id, targetType: "IDEA", value });
       }
 
       if (value === 1) idea.upvotes++;
@@ -122,7 +134,7 @@ const resolvers = {
     removeVote: async (_, { targetId, targetType }, { user }) => {
       checkAuth(user);
 
-      const vote = await Vote.findOne({ user: user.username, targetId, targetType });
+      const vote = await Vote.findOne({ user: user.email, targetId, targetType });
       if (!vote) return false;
 
       if (targetType === "IDEA") {
@@ -133,7 +145,7 @@ const resolvers = {
         await idea.save();
       }
 
-      await vote.remove();
+      await vote.deleteOne();
       return true;
     }
   }
