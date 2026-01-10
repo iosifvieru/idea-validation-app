@@ -12,7 +12,8 @@ const app = express()
 const port = process.env.PORT || 3000
 
 const typeDefs = fs.readFileSync('./graphql/schema.graphql',{encoding:'utf-8'})
-const resolvers = require('./graphql/resolvers')
+const resolvers = require('./graphql/resolvers');
+const { verifySupabaseJWT } = require('./utils/verifyToken');
 
 async function connectDatabase() {
   try {
@@ -25,20 +26,18 @@ async function connectDatabase() {
   }
 }
 
-const jwtSecret = process.env.JWT_SECRET;
-
 async function startServer() {
   const server = new ApolloServer({
     typeDefs,
     resolvers,
-    context: ({ req }) => {
+    context: async ({ req }) => {
       let user = null;
       const authHeader = req.headers.authorization || '';
       if (authHeader.startsWith('Bearer ')) {
         const token = authHeader.split(' ')[1];
 
         try {
-          const payload = jwt.verify(token, jwtSecret);
+          const payload = await verifySupabaseJWT(token);
 
           user = {
             email: payload.email,
