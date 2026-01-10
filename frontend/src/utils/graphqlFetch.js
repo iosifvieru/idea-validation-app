@@ -14,7 +14,6 @@ export async function graphqlFetch(query, variables = {}, token = null) {
         body: JSON.stringify({ query, variables }),
     });
     const body = await response.json();
-    console.log(body);
     if (body.errors) {
         throw new Error(body.errors.map((e) => e.message).join(", "));
     }

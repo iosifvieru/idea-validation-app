@@ -10,8 +10,8 @@ export default function CommentCard({ comment }) {
       </div>
       <p className="comment-content">{comment.content}</p>
       <div className="comment-card-stats">
-        <span>👍 {comment.upvotes}</span>
-        <span>👎 {comment.downvotes}</span>
+        <span>▲ {comment.upvotes}</span>
+        <span>▼ {comment.downvotes}</span>
         <span>Score: {comment.score}</span>
       </div>
     </div>

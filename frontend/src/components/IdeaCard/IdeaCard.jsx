@@ -45,16 +45,16 @@ export default function IdeaCard({
         </div>
 
         <div className="idea-card-stats">
-          <p>💬 {comments.length}</p>
+          <p>💬 {idea.commentsCount}</p>
         </div>
       </div>
 
       <div className="idea-card-votes">
         <button className="vote-button" onClick={() => onUpvote?.(idea.id)}>
-          👍 {idea.upvotes}
+          ▲ {idea.upvotes}
         </button>
         <button className="vote-button" onClick={() => onDownvote?.(idea.id)}>
-          👎 {idea.downvotes}
+          ▼ {idea.downvotes}
         </button>
       </div>
 

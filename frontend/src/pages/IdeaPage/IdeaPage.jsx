@@ -1,0 +1,284 @@
+import { useParams, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import TopBar from "../../components/TopBar/TopBar";
+import { graphqlFetch } from "../../utils/graphqlFetch";
+import "./IdeaPage.css";
+
+const GET_IDEA_QUERY = `
+query GetIdea($id: ID!, $page: Int = 1, $pageSize: Int = 10) {
+  idea(id: $id) {
+    id
+    title
+    content
+    author
+    upvotes
+    downvotes
+    createdAt
+    comments(page: $page, pageSize: $pageSize) {
+      items {
+        id
+        author
+        content
+        upvotes
+        downvotes
+        score
+        createdAt
+      }
+      meta {
+        hasNextPage
+      }
+    }
+  }
+}
+`;
+
+const UPDATE_IDEA_MUTATION = `
+mutation UpdateIdea($id: ID!, $title: String!, $content: String!) {
+  updateIdea(id: $id, title: $title, content: $content) {
+    id
+    title
+    content
+    upvotes
+    downvotes
+    commentsCount
+  }
+}
+`;
+
+const DELETE_IDEA_MUTATION = `
+mutation DeleteIdea($id: ID!) {
+  deleteIdea(id: $id)
+}
+`;
+
+const CREATE_COMMENT_MUTATION = `
+mutation AddComment($ideaId: ID!, $content: String!) {
+    addComment(ideaId: $ideaId, content: $content) {
+    id
+    author
+    content
+    upvotes
+    downvotes
+    score
+    createdAt
+    }
+}
+`;
+
+export default function IdeaPage({ user, token }) {
+  const { id } = useParams();
+  const navigate = useNavigate();
+
+  const [idea, setIdea] = useState(null);
+  const [page, setPage] = useState(1);
+  const [hasNext, setHasNext] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [editTitle, setEditTitle] = useState("");
+  const [editContent, setEditContent] = useState("");
+
+  const [newComment, setNewComment] = useState("");
+  const [postingComment, setPostingComment] = useState(false);
+
+  const loadIdea = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await graphqlFetch(GET_IDEA_QUERY, { id, page, pageSize: 10 }, token);
+      setIdea(data.idea);
+      setHasNext(data.idea.comments.meta.hasNextPage);
+
+      if (!isEditing) {
+        setEditTitle(data.idea.title);
+        setEditContent(data.idea.content);
+      }
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadIdea();
+  }, [id, page]);
+
+  const handleUpdateIdea = async () => {
+    if (!editTitle.trim() || !editContent.trim()) return;
+
+    try {
+      const data = await graphqlFetch(
+        UPDATE_IDEA_MUTATION,
+        { id: idea.id, title: editTitle, content: editContent },
+        token
+      );
+      setIdea((prev) => ({ ...prev, ...data.updateIdea }));
+      setIsEditing(false);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const handleDeleteIdea = async () => {
+    if (!window.confirm("Are you sure you want to delete this idea?")) return;
+
+    try {
+      await graphqlFetch(DELETE_IDEA_MUTATION, { id: idea.id }, token);
+      navigate("/");
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const handleVoteComment = async (commentId, value) => {
+    console.log("to be implemented soon, maybe...");
+  };
+
+  const handleBack = () => {
+    navigate(-1); 
+  };
+
+  const handleAddComment = async () => {
+    if (!newComment.trim()) return;
+
+    setPostingComment(true);
+    setError(null);
+
+    try {
+
+        const data = await graphqlFetch(
+        CREATE_COMMENT_MUTATION,
+        { ideaId: idea.id, content: newComment },
+        token
+        );
+
+        setIdea((prev) => ({
+        ...prev,
+        comments: {
+            ...prev.comments,
+            items: [data.addComment, ...prev.comments.items],
+        },
+        }));
+
+        setNewComment("");
+    } catch (err) {
+        setError(err.message);
+    } finally {
+        setPostingComment(false);
+    }
+  };
+
+
+  const isOwner = user?.email === idea?.author;
+
+  return (
+    <div className="idea-page">
+      <TopBar title="Idea Validator" userEmail={user} />
+
+      <div className="idea-page-container">
+        {loading && <p>Loading...</p>}
+        {error && <p className="error">{error}</p>}
+
+        <button className="back-button" onClick={handleBack}>
+          ← Back
+        </button>
+
+        {idea && (
+          <>
+            <div className="idea-full-card">
+
+              {isEditing ? (
+                <div className="idea-edit-form">
+                  <input
+                    type="text"
+                    value={editTitle}
+                    onChange={(e) => setEditTitle(e.target.value)}
+                    className="idea-edit-title"
+                  />
+                  <textarea
+                    value={editContent}
+                    onChange={(e) => setEditContent(e.target.value)}
+                    className="idea-edit-content"
+                    rows={4}
+                  />
+                  <div className="idea-edit-actions">
+                    <button onClick={handleUpdateIdea}>Save</button>
+                    <button onClick={() => setIsEditing(false)}>Cancel</button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <h2>{idea.title}</h2>
+                  <p className="idea-author">by {idea.author}</p>
+                  <p className="idea-content">{idea.content}</p>
+                  <div className="idea-votes">
+                    ▲ {idea.upvotes} | ▼ {idea.downvotes}
+                  </div>
+                </>
+              )}
+
+              {isOwner && !isEditing && (
+                <div className="idea-actions">
+                  <button onClick={() => setIsEditing(true)} title="Edit">✏️</button>
+                  <button onClick={handleDeleteIdea} title="Delete">🗑</button>
+                </div>
+              )}
+
+              <div className="add-comment-box">
+                <textarea
+                    placeholder="Write a comment..."
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    className="comment-input"
+                    rows={3}
+                />
+                <button
+                    onClick={handleAddComment}
+                    disabled={postingComment}
+                    className="comment-submit-button"
+                >
+                    {postingComment ? "Posting..." : "Add Comment"}
+                </button>
+            </div>
+
+            </div>
+
+            <h3 className="comments-title">Comments</h3>
+
+            {idea.comments.items.map((c) => (
+              <div key={c.id} className="comment-card">
+                <div className="comment-header">
+                  <span>{c.author}</span>
+                  <span className="comment-date">
+                    {new Date(c.createdAt).toLocaleString()}
+                  </span>
+                </div>
+
+                <p className="comment-content">{c.content}</p>
+
+                <div className="comment-votes">
+                  <button onClick={() => handleVoteComment(c.id, 1)}>▲</button>
+                  <span>{c.upvotes}</span>
+                  <button onClick={() => handleVoteComment(c.id, -1)}>▼</button>
+                  <span>{c.downvotes}</span>
+                </div>
+              </div>
+            ))}
+
+            <div className="pagination">
+              <button disabled={page === 1} onClick={() => setPage((p) => p - 1)}>
+                Prev
+              </button>
+              <span>{page}</span>
+              <button disabled={!hasNext} onClick={() => setPage((p) => p + 1)}>
+                Next
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}

@@ -5,6 +5,7 @@ import { Route, Routes, Navigate } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import MainPage from './pages/MainPage/MainPage';
+import IdeaPage from './pages/IdeaPage/IdeaPage';
 
 function App() {
 	const [loading, setLoading] = useState(true);
@@ -43,6 +44,11 @@ function App() {
 			<Route
 				path="/"
 				element={user ? <MainPage user={user} token={token} /> : <Navigate to="/login" replace />}
+			/>
+
+			<Route
+				path="/idea/:id"
+				element={user ? <IdeaPage user={user} token={token} /> : <Navigate to="/login" replace />}
 			/>
 
 			<Route path="*" element={<Navigate to={user ? "/" : "/login"} replace />} />

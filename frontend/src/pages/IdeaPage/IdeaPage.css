@@ -1,0 +1,210 @@
+.idea-page {
+  min-height: 100vh;
+  background: #121212;
+  color: #e5e5e5;
+}
+
+.idea-page-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.idea-full-card {
+  background: #1f1f1f;
+  border: 1px solid #333;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.idea-author {
+  color: #9ca3af;
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+}
+
+.idea-content {
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+
+.idea-votes {
+  color: #a1a1aa;
+}
+
+.comments-title {
+  margin-bottom: 12px;
+}
+
+.comment-card {
+  background: #1f1f1f;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: #9ca3af;
+}
+
+.comment-content {
+  margin: 8px 0;
+}
+
+.comment-votes {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.comment-votes button {
+  background: #1f1f1f;
+  border: 1px solid #333;
+  color: #e5e5e5;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 2px 8px;
+}
+
+.comment-votes button:hover {
+  background: #333;
+}
+
+.idea-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.idea-actions button {
+  background: #1f1f1f;
+  border: 1px solid #444;
+  color: #e5e5e5;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.idea-actions button:hover {
+  background: #333;
+}
+
+.idea-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.idea-edit-title {
+  padding: 8px 10px;
+  border-radius: 4px;
+  border: 1px solid #444;
+  background-color: #1f1f1f;
+  color: #e5e5e5;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.idea-edit-content {
+  padding: 8px 10px;
+  border-radius: 4px;
+  border: 1px solid #444;
+  background-color: #121212;
+  color: #e5e5e5;
+  font-size: 1rem;
+  resize: vertical;
+  min-height: 100px;
+}
+
+.idea-edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.idea-edit-actions button {
+  padding: 6px 14px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.idea-edit-actions button:first-child {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.idea-edit-actions button:first-child:hover {
+  background-color: #2563eb;
+}
+
+.idea-edit-actions button:last-child {
+  background-color: #444;
+  color: #e5e5e5;
+}
+
+.idea-edit-actions button:last-child:hover {
+  background-color: #555;
+}
+
+.back-button {
+  background-color: #1f1f1f;
+  color: #e5e5e5;
+  border: 1px solid #444;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  margin-bottom: 16px;
+}
+
+.back-button:hover {
+  background-color: #333;
+}
+
+.idea-card-add-comment {
+  margin-top: 16px;
+  display: flex;
+  gap: 8px;
+}
+
+.comment-input {
+  width: 96%;
+  min-height: 20px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #333;
+  background-color: #2c2c2c;
+  color: #e5e5e5;
+  resize: vertical;
+}
+
+.comment-input::placeholder {
+  color: #888;
+}
+
+.comment-submit-button {
+  align-self: flex-end;
+  margin-top: 6px;
+  padding: 4px 16px;
+  border-radius: 6px;
+  border: none;
+  background-color: #3b82f6;
+  color: white;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.comment-submit-button:hover {
+  background-color: #2563eb;
+}

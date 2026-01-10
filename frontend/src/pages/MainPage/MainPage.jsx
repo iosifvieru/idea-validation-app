@@ -4,6 +4,7 @@ import IdeaCard from "../../components/IdeaCard/IdeaCard";
 import { graphqlFetch } from "../../utils/graphqlFetch";
 import "./MainPage.css";
 import { supabase } from "../../auth/supabaseClient";
+import { useNavigate } from "react-router-dom";
 
 const GET_IDEAS_QUERY = `
 query GetIdeas($page: Int = 1, $pageSize: Int = 10) {
@@ -89,6 +90,8 @@ export default function MainPage({user, token}) {
   const [newContent, setNewContent] = useState("");
   const [posting, setPosting] = useState(false);
 
+  const navigate = useNavigate();
+
   const loadIdeas = async () => {
     setLoading(true);
     setError(null);
@@ -108,7 +111,7 @@ export default function MainPage({user, token}) {
   }, [page]);
 
   const handleLogout = () => supabase.auth.signOut();
-  const handleViewIdea = (id) => console.log("View idea:", id);
+  const handleViewIdea = (id) => navigate(`/idea/${id}`);
 
   const handleVote = async(id, value) => {
     setError(null);
