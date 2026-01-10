@@ -120,7 +120,7 @@ const resolvers = {
       if (idea.author !== user.email && !isAdmin(user))
         throw new ForbiddenError("Forbidden");
 
-      await idea.remove();
+      await idea.deleteOne();
       await Comment.deleteMany({ ideaId: id });
       await Vote.deleteMany({ targetId: id, targetType: "IDEA" });
 
