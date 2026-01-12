@@ -7,7 +7,7 @@ Authors: Adrian Georgita & Vieru Iosif
     Frontend:
         - React
         - Vite - development and build tool
-        - Supabase Auth - user authentication and session management - [link here](https://supabase.com/)
+        - Supabase Auth - user authentication and session management
         - GraphQL - backend communication
         - CSS
     
