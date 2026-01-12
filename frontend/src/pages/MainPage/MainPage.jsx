@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import TopBar from "../../components/TopBar/TopBar";
 import IdeaCard from "../../components/IdeaCard/IdeaCard";
 import "./MainPage.css";
@@ -60,8 +60,11 @@ export default function MainPage({user, token}) {
     } 
   }
 
-  const handleUpvote = (id) => handleVote(id, 1);
-  const handleDownvote = (id) => handleVote(id, -1);
+  const handleUpVote = (id) => handleVote(id, 1);
+  const handleDownVote = (id) => handleVote(id, -1);
+
+  const handleCommentUpVote = () => {alert("up vote not implemented.")};
+  const handleCommentDownVote = () => {alert("down vote not implemented.")};
 
   const handleCreateIdea = async () => {
     if (!newTitle.trim() || !newContent.trim()) return;
@@ -169,9 +172,11 @@ export default function MainPage({user, token}) {
           <IdeaCard key={idea.id} 
                     idea={idea} 
                     onViewIdea={handleViewIdea} 
-                    onUpvote={handleUpvote} 
-                    onDownvote={handleDownvote} 
+                    onUpvote={handleUpVote} 
+                    onDownvote={handleDownVote} 
                     onAddComment={addComment}
+                    onCommentDownVote={handleCommentDownVote}
+                    onCommentUpVote={handleCommentUpVote}
           />
         ))}
 

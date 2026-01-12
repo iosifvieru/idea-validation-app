@@ -8,6 +8,8 @@ export default function IdeaCard({
   onUpvote,
   onDownvote,
   onAddComment,
+  onCommentUpVote,
+  onCommentDownVote
 }) {
   const [newComment, setNewComment] = useState("");
   const [comments, setComments] = useState([]);
@@ -60,7 +62,12 @@ export default function IdeaCard({
 
       <div className="idea-card-comments">
         {comments.map((comment) => (
-          <CommentCard key={comment.id} comment={comment} />
+          <CommentCard 
+              key={comment.id} 
+              comment={comment}
+              handleUpVote={onCommentUpVote}
+              handleDownVote={onCommentDownVote} 
+          />
         ))}
       </div>
 

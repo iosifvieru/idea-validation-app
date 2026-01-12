@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import TopBar from "../../components/TopBar/TopBar";
 import "./IdeaPage.css";
 import { useIdeaActions } from "../../hooks/useIdeaActions";
+import CommentCard from "../../components/CommentCard/CommentCard";
 
 export default function IdeaPage({ user, token }) {
   const { id } = useParams();
@@ -70,7 +71,7 @@ export default function IdeaPage({ user, token }) {
   };
 
   const handleVoteComment = async (commentId, value) => {
-    console.log("to be implemented soon, maybe...");
+    alert("not implemented.");
   };
 
   const handleBack = () => {
@@ -119,7 +120,6 @@ export default function IdeaPage({ user, token }) {
         {idea && (
           <>
             <div className="idea-full-card">
-
               {isEditing ? (
                 <div className="idea-edit-form">
                   <input
@@ -179,22 +179,12 @@ export default function IdeaPage({ user, token }) {
             <h3 className="comments-title">Comments</h3>
 
             {idea.comments.items.map((c) => (
-              <div key={c.id} className="comment-card">
-                <div className="comment-header">
-                  <span>{c.author}</span>
-                  <span className="comment-date">
-                    {new Date(c.createdAt).toLocaleString()}
-                  </span>
-                </div>
-
-                <p className="comment-content">{c.content}</p>
-
-                <div className="comment-votes">
-                  <button onClick={() => handleVoteComment(c.id, 1)}>▲</button>
-                  <span>{c.upvotes}</span>
-                  <button onClick={() => handleVoteComment(c.id, -1)}>▼</button>
-                  <span>{c.downvotes}</span>
-                </div>
+              <div>
+                <CommentCard key = {c.id} comment={c} 
+                    handleDownVote={() => handleVoteComment(c.id, -1)}
+                    handleUpVote = {() => handleVoteComment(c.id, 1)}    
+                >
+                </CommentCard>
               </div>
             ))}
 
