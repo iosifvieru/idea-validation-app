@@ -1,4 +1,3 @@
-import './App.css';
 import { useEffect, useState } from 'react';
 import { supabase } from './auth/supabaseClient';
 import { Route, Routes, Navigate } from 'react-router-dom';

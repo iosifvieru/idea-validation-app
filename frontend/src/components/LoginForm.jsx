@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { login } from "../auth/auth"
+import './AuthCss.css'
 
 export default function RegisterForm() {
     const [email, setEmail] = useState("");
@@ -28,8 +29,9 @@ export default function RegisterForm() {
 
     return (
         <>
-        <form onSubmit={onSubmit}>
+        <form className="form-auth" onSubmit={onSubmit}>
             <input
+                className="form-auth-input"
                 placeholder="Enter email.."
                 type="email"
                 value={email}
@@ -37,7 +39,8 @@ export default function RegisterForm() {
                 required
             />
 
-            <input 
+            <input
+                className="form-auth-input"
                 placeholder="Enter password.."
                 type="password"
                 value={password}
@@ -46,6 +49,7 @@ export default function RegisterForm() {
             />
 
             <button
+                className="form-auth-button"
                 disabled={busy}
             >Login</button>
         </form>
