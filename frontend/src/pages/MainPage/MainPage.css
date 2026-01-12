@@ -1,0 +1,171 @@
+.main-page {
+  min-height: 100vh;
+  background-color: #121212;
+  color: #e5e5e5;
+}
+
+.main-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.filter-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #333;
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: #1f1f1f;
+  color: #e5e5e5;
+}
+
+.filter-input::placeholder {
+  color: #888;
+}
+
+.filter-button {
+  padding: 8px 16px;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.filter-button:hover {
+  background-color: #2563eb;
+}
+
+.sort-buttons {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.sort-button {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid #333;
+  background-color: #1f1f1f;
+  color: #e5e5e5;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.sort-button:hover {
+  background-color: #333;
+}
+
+.sort-button.active {
+  background-color: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
+.loading {
+  color: #e5e5e5;
+}
+
+.error {
+  color: #ef4444;
+  margin-bottom: 12px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.pagination-button {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid #333;
+  background-color: #1f1f1f;
+  color: #e5e5e5;
+  cursor: pointer;
+}
+
+.pagination-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-button:hover:enabled {
+  background-color: #333;
+}
+
+.pagination-page {
+  padding: 8px 12px;
+  font-weight: 500;
+}
+
+.create-idea-box {
+  background: #1f1f1f;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.create-idea-title {
+  margin-bottom: 10px;
+  color: #e5e5e5;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.create-idea-input,
+.create-idea-textarea {
+  width: 98%;
+  margin-bottom: 10px;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #444;
+  background: #121212;
+  color: #e5e5e5;
+  font-size: 0.95rem;
+}
+
+.create-idea-input::placeholder,
+.create-idea-textarea::placeholder {
+  color: #888;
+}
+
+.create-idea-textarea {
+  resize: vertical;
+}
+
+.create-idea-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.create-idea-button {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.create-idea-button:hover {
+  background: #2563eb;
+}
+
+.create-idea-button:disabled {
+  background: #444;
+  cursor: not-allowed;
+}
