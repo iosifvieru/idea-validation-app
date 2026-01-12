@@ -29,7 +29,7 @@ export default function MainPage({user, token}) {
     setLoading(true);
     setError(null);
     try {
-      const data = await getIdeas(1);
+      const data = await getIdeas(page);
       setIdeas(data.ideas.items);
       setMeta(data.ideas.meta);
     } catch (err) {
