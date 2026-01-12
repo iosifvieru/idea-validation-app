@@ -1,0 +1,70 @@
+enum IdeaSort {
+  NEW
+  TOP
+  COMMENTS
+}
+
+enum TargetType {
+  IDEA
+  COMMENT
+}
+
+type PageMeta {
+  totalItems: Int!
+  hasNextPage: Boolean!
+}
+
+type IdeaPage {
+  items: [Idea!]!
+  meta: PageMeta!
+}
+
+type CommentPage {
+  items: [Comment!]!
+  meta: PageMeta!
+}
+
+type Idea {
+  id: ID!
+  author: String!
+  title: String!
+  content: String!
+  upvotes: Int!
+  downvotes: Int!
+  score: Int!
+  comments(page: Int = 1, pageSize: Int = 5): CommentPage!
+  commentsCount: Int!
+  createdAt: String!
+  updatedAt: String!
+}
+
+type Comment {
+  id: ID!
+  author: String!
+  content: String!
+  upvotes: Int!
+  downvotes: Int!
+  score: Int!
+  createdAt: String!
+  updatedAt: String!
+}
+
+type Query {
+  ideas(
+    page: Int = 1
+    pageSize: Int = 10
+  ): IdeaPage!
+
+  idea(id: ID!): Idea
+}
+
+type Mutation {
+  createIdea(title: String!, content: String!): Idea!
+  updateIdea(id: ID!, title: String, content: String): Idea!
+  deleteIdea(id: ID!): Boolean!
+
+  addComment(ideaId: ID!, content: String!): Comment!
+
+  voteIdea(id: ID!, value: Int!): Idea!
+  removeVote(targetId: ID!, targetType: TargetType!): Boolean!
+}
