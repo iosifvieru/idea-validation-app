@@ -139,6 +139,8 @@ const resolvers = {
       const comment = await Comment.create({ ideaId, author: user.email, content });
       await Idea.findByIdAndUpdate(ideaId, { $inc: { commentsCount: 1 } });
 
+      console.log(comment);
+
       return comment;
     },
 

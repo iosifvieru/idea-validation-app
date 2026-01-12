@@ -1,4 +1,3 @@
-import React from "react";
 import "./CommentCard.css";
 
 export default function CommentCard({ comment }) {
@@ -6,7 +5,7 @@ export default function CommentCard({ comment }) {
     <div className="comment-card">
       <div className="comment-card-header">
         <span className="comment-author">{comment.author}</span>
-        <span className="comment-date">{new Date(comment.createdAt).toLocaleDateString()}</span>
+        <span className="comment-date">{new Date(Number(comment.createdAt)).toLocaleDateString()}</span>
       </div>
       <p className="comment-content">{comment.content}</p>
       <div className="comment-card-stats">

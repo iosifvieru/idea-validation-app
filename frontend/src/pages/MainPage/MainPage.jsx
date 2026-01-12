@@ -1,79 +1,10 @@
 import React, { useEffect, useState } from "react";
 import TopBar from "../../components/TopBar/TopBar";
 import IdeaCard from "../../components/IdeaCard/IdeaCard";
-import { graphqlFetch } from "../../utils/graphqlFetch";
 import "./MainPage.css";
 import { supabase } from "../../auth/supabaseClient";
 import { useNavigate } from "react-router-dom";
-
-const GET_IDEAS_QUERY = `
-query GetIdeas($page: Int = 1, $pageSize: Int = 10) {
-  ideas(page: $page, pageSize: $pageSize) {
-    items {
-      id
-      author
-      title
-      content
-      upvotes
-      downvotes
-      commentsCount
-      createdAt
-      comments(page: 1, pageSize: 3) {
-        items {
-          id
-          author
-          content
-          upvotes
-          downvotes
-          score
-          createdAt
-        }
-      }
-    }
-    meta {
-      totalItems
-      hasNextPage
-    }
-  }
-}
-`;
-
-const VOTE_IDEA_MUTATION = `
-mutation VoteIdea($id: ID!, $value: Int!) {
-  voteIdea(id: $id, value: $value) {
-    id
-    upvotes
-    downvotes
-    score
-  }
-}
-`;
-
-const CREATE_IDEA_MUTATION = `
-mutation CreateIdea($title: String!, $content: String!) {
-  createIdea(title: $title, content: $content) {
-    id
-    title
-    content
-    author
-    upvotes
-    downvotes
-    commentsCount
-    createdAt
-    comments(page: 1, pageSize: 3) {
-      items {
-        id
-        author
-        content
-        upvotes
-        downvotes
-        score
-        createdAt
-      }
-    }
-  }
-}
-`;
+import { useIdeaActions } from "../../hooks/useIdeaActions"
 
 export default function MainPage({user, token}) {
   const [ideas, setIdeas] = useState([]);
@@ -90,13 +21,15 @@ export default function MainPage({user, token}) {
   const [newContent, setNewContent] = useState("");
   const [posting, setPosting] = useState(false);
 
+  const { createIdea, getIdeas, addComment, voteIdea } = useIdeaActions(token);
+
   const navigate = useNavigate();
 
   const loadIdeas = async () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await graphqlFetch(GET_IDEAS_QUERY, { page, pageSize: 10 });
+      const data = await getIdeas(1);
       setIdeas(data.ideas.items);
       setMeta(data.ideas.meta);
     } catch (err) {
@@ -116,7 +49,7 @@ export default function MainPage({user, token}) {
   const handleVote = async(id, value) => {
     setError(null);
     try {
-      const data = await graphqlFetch(VOTE_IDEA_MUTATION, { id, value }, token);
+      const data = await voteIdea(id, value);
       setIdeas((prev) =>
         prev.map((i) =>
           i.id === id ? { ...i, upvotes: data.voteIdea.upvotes, downvotes: data.voteIdea.downvotes } : i
@@ -137,11 +70,7 @@ export default function MainPage({user, token}) {
     setError(null);
 
     try {
-      const data = await graphqlFetch(
-        CREATE_IDEA_MUTATION,
-        { title: newTitle, content: newContent },
-        token
-      );
+      const data = await createIdea(newTitle, newContent);
 
       setIdeas((prev) => [data.createIdea, ...prev]);
 
@@ -237,7 +166,13 @@ export default function MainPage({user, token}) {
         </div>
 
         {filteredAndSortedIdeas.map((idea) => (
-          <IdeaCard key={idea.id} idea={idea} onViewIdea={handleViewIdea} onUpvote={handleUpvote} onDownvote={handleDownvote} />
+          <IdeaCard key={idea.id} 
+                    idea={idea} 
+                    onViewIdea={handleViewIdea} 
+                    onUpvote={handleUpvote} 
+                    onDownvote={handleDownvote} 
+                    onAddComment={addComment}
+          />
         ))}
 
         <div className="pagination">

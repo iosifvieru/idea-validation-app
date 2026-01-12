@@ -1,69 +1,8 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import TopBar from "../../components/TopBar/TopBar";
-import { graphqlFetch } from "../../utils/graphqlFetch";
 import "./IdeaPage.css";
-
-const GET_IDEA_QUERY = `
-query GetIdea($id: ID!, $page: Int = 1, $pageSize: Int = 10) {
-  idea(id: $id) {
-    id
-    title
-    content
-    author
-    upvotes
-    downvotes
-    createdAt
-    comments(page: $page, pageSize: $pageSize) {
-      items {
-        id
-        author
-        content
-        upvotes
-        downvotes
-        score
-        createdAt
-      }
-      meta {
-        hasNextPage
-      }
-    }
-  }
-}
-`;
-
-const UPDATE_IDEA_MUTATION = `
-mutation UpdateIdea($id: ID!, $title: String!, $content: String!) {
-  updateIdea(id: $id, title: $title, content: $content) {
-    id
-    title
-    content
-    upvotes
-    downvotes
-    commentsCount
-  }
-}
-`;
-
-const DELETE_IDEA_MUTATION = `
-mutation DeleteIdea($id: ID!) {
-  deleteIdea(id: $id)
-}
-`;
-
-const CREATE_COMMENT_MUTATION = `
-mutation AddComment($ideaId: ID!, $content: String!) {
-    addComment(ideaId: $ideaId, content: $content) {
-    id
-    author
-    content
-    upvotes
-    downvotes
-    score
-    createdAt
-    }
-}
-`;
+import { useIdeaActions } from "../../hooks/useIdeaActions";
 
 export default function IdeaPage({ user, token }) {
   const { id } = useParams();
@@ -82,11 +21,13 @@ export default function IdeaPage({ user, token }) {
   const [newComment, setNewComment] = useState("");
   const [postingComment, setPostingComment] = useState(false);
 
+  const {getIdea, updateIdea, deleteIdea, addComment} = useIdeaActions(token);
+
   const loadIdea = async () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await graphqlFetch(GET_IDEA_QUERY, { id, page, pageSize: 10 }, token);
+      const data = await getIdea(id, page);
       setIdea(data.idea);
       setHasNext(data.idea.comments.meta.hasNextPage);
 
@@ -109,11 +50,7 @@ export default function IdeaPage({ user, token }) {
     if (!editTitle.trim() || !editContent.trim()) return;
 
     try {
-      const data = await graphqlFetch(
-        UPDATE_IDEA_MUTATION,
-        { id: idea.id, title: editTitle, content: editContent },
-        token
-      );
+      const data = await updateIdea(idea.id, editTitle, editContent);
       setIdea((prev) => ({ ...prev, ...data.updateIdea }));
       setIsEditing(false);
     } catch (err) {
@@ -125,7 +62,7 @@ export default function IdeaPage({ user, token }) {
     if (!window.confirm("Are you sure you want to delete this idea?")) return;
 
     try {
-      await graphqlFetch(DELETE_IDEA_MUTATION, { id: idea.id }, token);
+      await deleteIdea(id);
       navigate("/");
     } catch (err) {
       setError(err.message);
@@ -147,12 +84,7 @@ export default function IdeaPage({ user, token }) {
     setError(null);
 
     try {
-
-        const data = await graphqlFetch(
-        CREATE_COMMENT_MUTATION,
-        { ideaId: idea.id, content: newComment },
-        token
-        );
+        const data = await addComment(idea.id, newComment);
 
         setIdea((prev) => ({
         ...prev,
@@ -169,7 +101,6 @@ export default function IdeaPage({ user, token }) {
         setPostingComment(false);
     }
   };
-
 
   const isOwner = user?.email === idea?.author;
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import CommentCard from "../CommentCard/CommentCard";
 import "./IdeaCard.css";
 
